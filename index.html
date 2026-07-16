@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Air Quality Attribution &amp; Advisory Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="gov-strip">
+  <div class="wrap">
+    <span>ET HACKATHON PROTOTYPE — BUILT FOR POTENTIAL ADOPTION BY STATE POLLUTION CONTROL BOARDS</span>
+    <span>NOT AN OFFICIAL GOVERNMENT SERVICE</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-wrap">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">AQ</span>
+      <span class="brand-text">
+        <span class="brand-title">Air Quality Attribution &amp; Advisory Platform</span>
+        <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
+      </span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="map.html">Map &amp; Attribution</a>
+      <a href="advisory.html">Citizen Advisory</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+    <div class="header-controls">
+      <select class="select-control" data-role="city-select">
+        <option value="Delhi">Delhi</option>
+        <option value="Mumbai">Mumbai</option>
+      </select>
+      <div class="status-toggle" data-role="offline-toggle">
+        <span class="status-dot"></span>
+        <span class="status-label">Offline / fallback data</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Situation report</h1>
+      <p class="desc">Live-modeled air quality, dominant pollution sources, and public health guidance for <span id="cityName">Delhi</span>, updated from the Causal Loop Detector and Geospatial Attribution modules.</p>
+    </div>
+    <div class="eyebrow" id="todayDate"></div>
+  </div>
+
+  <div class="grid-2" style="align-items:start;">
+    <div class="card card-pad">
+      <div class="eyebrow" style="margin-bottom:10px;">CURRENT READING · ZONE <span id="zoneLabel"></span></div>
+      <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+        <div id="aqiGauge" style="width:220px; flex-shrink:0;"></div>
+        <div>
+          <div style="display:flex; align-items:baseline; gap:6px;">
+            <span class="mono-num" id="aqiValue" style="font-size:3rem; font-weight:500; line-height:1;">—</span>
+            <span style="color:var(--muted); font-size:0.9rem;">AQI</span>
+          </div>
+          <span class="badge aqi-chip" id="aqiCategoryChip" style="margin-top:8px;">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap:14px;">
+      <div class="readout-tile">
+        <div class="label">PM2.5</div>
+        <div class="value" id="tilePm25">—<span class="unit">µg/m³</span></div>
+      </div>
+      <div class="readout-tile">
+        <div class="label">Temperature</div>
+        <div class="value" id="tileTemp">—<span class="unit">°C</span></div>
+      </div>
+      <div class="readout-tile">
+        <div class="label">Wind speed</div>
+        <div class="value" id="tileWind">—<span class="unit">km/h</span></div>
+      </div>
+      <div class="readout-tile">
+        <div class="label">Humidity</div>
+        <div class="value" id="tileHumidity">—<span class="unit">%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-pad" style="margin-top:20px;">
+    <div class="section-title">7-day AQI trend</div>
+    <div style="height:220px;"><canvas id="trendChart"></canvas></div>
+  </div>
+
+  <div class="section-title" style="margin-top:32px;">Modules</div>
+  <div class="grid-3">
+    <a href="map.html" data-module-link="map.html" class="card card-pad" style="text-decoration:none; color:inherit;">
+      <div class="eyebrow" style="margin-bottom:8px;">01 · GEOSPATIAL</div>
+      <h3 style="font-size:1.1rem; margin-bottom:6px;">Map &amp; Source Attribution</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin:0;">Grid-level pollution sourcing — traffic, industry, stubble burning — with per-zone drill-down.</p>
+    </a>
+    <a href="advisory.html" data-module-link="advisory.html" class="card card-pad" style="text-decoration:none; color:inherit;">
+      <div class="eyebrow" style="margin-bottom:8px;">02 · HEALTH ADVISORY</div>
+      <h3 style="font-size:1.1rem; margin-bottom:6px;">Citizen Advisory</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin:0;">Personalised, multilingual health guidance with an officer sign-off before dispatch.</p>
+    </a>
+    <a href="leaderboard.html" data-module-link="leaderboard.html" class="card card-pad" style="text-decoration:none; color:inherit;">
+      <div class="eyebrow" style="margin-bottom:8px;">03 · ACCOUNTABILITY</div>
+      <h3 style="font-size:1.1rem; margin-bottom:6px;">Pollution Debt Leaderboard</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin:0;">Estimated health cost by zone, ranked weekly, plus a two-city comparison.</p>
+    </a>
+  </div>
+</main>
+
+<footer class="site-footer">AQI CATEGORY THRESHOLDS PER CPCB NATIONAL AIR QUALITY INDEX · DEMO DATA — NOT FOR OPERATIONAL USE</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/grid.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>

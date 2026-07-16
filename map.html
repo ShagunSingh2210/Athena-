@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map & Attribution — Air Quality Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="gov-strip">
+  <div class="wrap">
+    <span>ET HACKATHON PROTOTYPE — BUILT FOR POTENTIAL ADOPTION BY STATE POLLUTION CONTROL BOARDS</span>
+    <span>NOT AN OFFICIAL GOVERNMENT SERVICE</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-wrap">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">AQ</span>
+      <span class="brand-text">
+        <span class="brand-title">Air Quality Attribution &amp; Advisory Platform</span>
+        <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
+      </span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="map.html">Map &amp; Attribution</a>
+      <a href="advisory.html">Citizen Advisory</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+    <div class="header-controls">
+      <select class="select-control" data-role="city-select">
+        <option value="Delhi">Delhi</option>
+        <option value="Mumbai">Mumbai</option>
+      </select>
+      <div class="status-toggle" data-role="offline-toggle">
+        <span class="status-dot"></span>
+        <span class="status-label">Offline / fallback data</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Geospatial source attribution</h1>
+      <p class="desc">Each marker is a 2km × 2km grid cell colored by current AQI. Click a marker — or pick a zone below — for its cause breakdown, trend, and road-density reading.</p>
+    </div>
+    <div class="field" style="min-width:220px;">
+      <label for="zoneSelect">Jump to zone</label>
+      <select id="zoneSelect"><option value="">Select a zone…</option></select>
+    </div>
+  </div>
+
+  <div class="legend-strip">
+    <span><span class="dot" style="background:var(--aqi-good);"></span>Good</span>
+    <span><span class="dot" style="background:var(--aqi-satisfactory);"></span>Satisfactory</span>
+    <span><span class="dot" style="background:var(--aqi-moderate);"></span>Moderate</span>
+    <span><span class="dot" style="background:var(--aqi-poor);"></span>Poor</span>
+    <span><span class="dot" style="background:var(--aqi-very-poor);"></span>Very Poor</span>
+    <span><span class="dot" style="background:var(--aqi-severe);"></span>Severe</span>
+    <span id="densityStatus" style="margin-left:auto;"></span>
+  </div>
+
+  <div class="map-layout">
+    <div id="map"></div>
+    <div class="card card-pad drilldown-panel">
+      <div id="drilldownContent">
+        <div class="drilldown-empty">Click a zone marker on the map, or use the dropdown above, to see its attribution detail here.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card card-pad" style="margin-top:20px;" id="modelReadout"></div>
+</main>
+
+<footer class="site-footer">GRID: 2KM × 2KM CELLS · ATTRIBUTION MODEL: AQI ~ TRAFFIC + INDUSTRY + FIRES</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/grid.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/osm-roads.js"></script>
+<script src="assets/js/attribution.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/map-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pollution Debt Leaderboard — Air Quality Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="gov-strip">
+  <div class="wrap">
+    <span>ET HACKATHON PROTOTYPE — BUILT FOR POTENTIAL ADOPTION BY STATE POLLUTION CONTROL BOARDS</span>
+    <span>NOT AN OFFICIAL GOVERNMENT SERVICE</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-wrap">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">AQ</span>
+      <span class="brand-text">
+        <span class="brand-title">Air Quality Attribution &amp; Advisory Platform</span>
+        <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
+      </span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Dashboard</a>
+      <a href="map.html">Map &amp; Attribution</a>
+      <a href="advisory.html">Citizen Advisory</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </nav>
+    <div class="header-controls">
+      <select class="select-control" data-role="city-select">
+        <option value="Delhi">Delhi</option>
+        <option value="Mumbai">Mumbai</option>
+      </select>
+      <div class="status-toggle" data-role="offline-toggle">
+        <span class="status-dot"></span>
+        <span class="status-label">Offline / fallback data</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Pollution debt leaderboard</h1>
+      <p class="desc">Top 5 zones ranked by estimated cumulative health cost this week.</p>
+    </div>
+  </div>
+
+  <div class="card card-pad">
+    <table class="ledger">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Zone</th>
+          <th>Population</th>
+          <th>Days above threshold</th>
+          <th>Avg AQI (week)</th>
+          <th>Estimated health cost</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody"></tbody>
+    </table>
+    <div class="methodology-note">
+      <span>⚠️</span>
+      <div><strong>Methodology:</strong> estimated_cost = population × days_above_threshold × per_capita_health_cost_estimate. The per-capita figure is derived from the Lancet Planetary Health India mortality estimate cited in the problem statement — an approximation for demo purposes, not a certified economic figure.</div>
+    </div>
+  </div>
+
+  <div class="card card-pad" style="margin-top:20px;">
+    <div class="section-title">Estimated cost by zone</div>
+    <div style="height:260px;"><canvas id="leaderboardChart"></canvas></div>
+  </div>
+
+  <div class="section-title" style="margin-top:32px;">Two-city comparison</div>
+  <div class="grid-2">
+    <div class="card card-pad">
+      <div class="eyebrow" style="margin-bottom:6px;">CITY A</div>
+      <h3 id="cityAName" style="font-size:1.2rem;"></h3>
+      <div class="readout-tile" style="margin-bottom:14px;"><div class="label">Average AQI</div><div class="value" id="cityAAqi">—</div></div>
+      <div style="height:180px;"><canvas id="cityAFactorChart"></canvas></div>
+    </div>
+    <div class="card card-pad">
+      <div class="eyebrow" style="margin-bottom:6px;">CITY B</div>
+      <h3 id="cityBName" style="font-size:1.2rem;"></h3>
+      <div class="readout-tile" style="margin-bottom:14px;"><div class="label">Average AQI</div><div class="value" id="cityBAqi">—</div></div>
+      <div style="height:180px;"><canvas id="cityBFactorChart"></canvas></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">COST FIGURES ARE HACKATHON-DEMO ESTIMATES · REFRESHED WEEKLY IN PRODUCTION</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/grid.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/leaderboard-page.js"></script>
+</body>
+</html>
