@@ -94,6 +94,8 @@ def run_module_5(city: CityConfig, aqi_df: pd.DataFrame, weather_history: pd.Dat
     logger.info("[Module 5] %s: forecasting AQI %d day(s) ahead", city.name, FORECAST_HORIZON_DAYS)
 
     daily_aqi = aqi_df.groupby("date", as_index=False)["aqi_estimate"].mean()
+    daily_aqi["date"] = daily_aqi["date"].astype(str)
+    weather_history["date"] = weather_history["date"].astype(str)
     history = daily_aqi.merge(weather_history[["date", "wind_speed_kmh", "humidity_pct"]], on="date", how="inner")
     weather_forecast = fetch_weather_forecast(city, horizon_days=FORECAST_HORIZON_DAYS)
 

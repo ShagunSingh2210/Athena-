@@ -7,67 +7,43 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
 
-<div class="gov-strip">
-  <div class="wrap">
-    <span>ET HACKATHON PROTOTYPE — BUILT FOR POTENTIAL ADOPTION BY STATE POLLUTION CONTROL BOARDS</span>
-    <span>NOT AN OFFICIAL GOVERNMENT SERVICE</span>
-  </div>
+
 </div>
 
-<header class="site-header">
-  <div class="header-wrap">
-    <a href="index.html" class="brand">
-      <span class="brand-mark">AQ</span>
-      <span class="brand-text">
-        <span class="brand-title">Air Quality Attribution &amp; Advisory Platform</span>
-        <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
-      </span>
-    </a>
-            <nav class="bg-[#0f172a] text-white flex justify-between items-center w-full px-6 py-0 h-16 shrink-0 z-50 shadow-md border-b border-white/5">
-        <div class="flex items-center gap-8 h-full">
-            <div class="flex items-center gap-3">
-                <span class="bg-[#f59e0b] text-[#0f172a] font-black px-2 py-1 rounded-md text-sm font-mono leading-none tracking-tight">AQ</span>
-                <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
-            </div>
-            <div class="hidden md:flex gap-6 text-[13px] font-medium text-slate-300 items-center h-full pt-1">
-                <a href="index.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Dashboard</a>
-                <a href="causal-loop.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Causal Loop</a>
-                <a href="map.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Map & Attribution</a>
-                <a href="advisory.html" class="text-[#fbbF24] font-bold border-b-2 border-[#fbbF24] hover:text-white transition-colors h-full flex items-center">Citizen Advisory</a>
-                <a href="leaderboard.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Leaderboard</a>
-            </div>
+<nav class="bg-[#0f172a] text-white flex justify-between items-center w-full px-6 py-0 h-16 shrink-0 z-50 shadow-md border-b border-white/5">
+    <div class="flex items-center gap-8 h-full">
+        <div class="flex items-center gap-3">
+            <span class="bg-[#f59e0b] text-[#0f172a] font-black px-2 py-1 rounded-md text-sm font-mono leading-none tracking-tight">AQ</span>
+            <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="relative">
-                <select class="appearance-none bg-[#1e293b] border border-slate-700 rounded-md px-3 py-1.5 pr-8 text-xs text-white outline-none font-mono focus:border-amber-500 cursor-pointer" data-role="city-select">
-                    <option value="Delhi">Delhi</option>
-                    <option value="Mumbai">Mumbai</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 cursor-pointer bg-[#1e293b] px-3 py-1.5 rounded-md border border-slate-700 text-xs text-slate-300 transition-colors hover:bg-slate-700" data-role="offline-toggle">
-                <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]"></div>
-                <span class="font-mono">Live data sources</span>
-            </div>
+        <div class="hidden md:flex gap-6 text-[13px] font-medium text-slate-300 items-center h-full pt-1">
+            <a href="index.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Dashboard</a>
+            <a href="causal-loop.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Causal Loop</a>
+            <a href="map.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Map & Attribution</a>
+            <a href="advisory.html" class="text-[#fbbF24] font-bold border-b-2 border-[#fbbF24] hover:text-white transition-colors h-full flex items-center">Citizen Advisory</a>
+            <a href="leaderboard.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Leaderboard</a>
         </div>
-    </nav>
-    <div class="header-controls">
-      <select class="select-control" data-role="city-select">
-        <option value="Delhi">Delhi</option>
-        <option value="Mumbai">Mumbai</option>
-      </select>
-      <div class="status-toggle" data-role="offline-toggle">
-        <span class="status-dot"></span>
-        <span class="status-label">Offline / fallback data</span>
-      </div>
     </div>
-  </div>
-</header>
+    <div class="flex items-center gap-4">
+        <div class="relative">
+            <select class="appearance-none bg-[#1e293b] border border-slate-700 rounded-md px-3 py-1.5 pr-8 text-xs text-white outline-none font-mono focus:border-amber-500 cursor-pointer" data-role="city-select">
+                <option value="Delhi">Delhi</option>
+                <option value="Mumbai">Mumbai</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 cursor-pointer bg-[#1e293b] px-3 py-1.5 rounded-md border border-slate-700 text-xs text-slate-300 transition-colors hover:bg-slate-700" data-role="offline-toggle">
+            <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]"></div>
+            <span class="font-mono">Live data sources</span>
+        </div>
+    </div>
+</nav>
 
 <main class="page">
   <div class="page-head">

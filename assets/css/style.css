@@ -54,3 +54,9 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 600; margin: 0 0 0.4
     0%, 100% { opacity: 1; transform: scale(1); } 
     50% { opacity: 0.85; transform: scale(1.1); box-shadow: 0 0 15px currentColor; } 
 }
+/* Custom pulse animation for severe AQI zones */
+.pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+@keyframes pulse-ring { 
+    0%, 100% { opacity: 1; transform: scale(1); } 
+    50% { opacity: 0.85; transform: scale(1.1); box-shadow: 0 0 15px currentColor; } 
+}
