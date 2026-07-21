@@ -15,25 +15,28 @@
 </head>
 <body class="flex flex-col h-screen bg-[#0d1b2a]">
     <!-- Top Nav Bar -->
-    <nav class="bg-[#111412]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center w-full px-6 py-3 h-16 shrink-0 z-50">
+        <nav class="bg-[#111827] text-white flex justify-between items-center w-full px-6 py-3.5 h-16 shrink-0 z-50 shadow-md">
         <div class="flex items-center gap-6">
-            <span class="text-lg font-bold tracking-tight text-white">AirGuard</span>
-            <div class="hidden md:flex gap-6 text-xs font-mono">
-                <a href="index.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Dashboard</a>
-                <a href="causal-loop.html" class="text-cyan-400 font-bold border-b-2 border-cyan-400 pb-1">Causal Loop</a>
-                <a href="map.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Attribution Map</a>
-                <a href="advisory.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Health Advisory</a>
-                <a href="leaderboard.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Leaderboard</a>
+            <div class="flex items-center gap-2">
+                <span class="bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-sm font-mono">AQ</span>
+                <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-xs font-medium text-slate-300 items-center">
+                <a href="index.html" class="text-slate-300 hover:text-white transition-colors">Dashboard</a>
+                <a href="causal-loop.html" class="text-amber-400 font-bold border-b-2 border-amber-400 pb-1 hover:text-white transition-colors">Causal Loop</a>
+                <a href="map.html" class="text-slate-300 hover:text-white transition-colors">Map & Attribution</a>
+                <a href="advisory.html" class="text-slate-300 hover:text-white transition-colors">Citizen Advisory</a>
+                <a href="leaderboard.html" class="text-slate-300 hover:text-white transition-colors">Leaderboard</a>
             </div>
         </div>
         <div class="flex items-center gap-4">
-            <select class="bg-gray-900 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none font-mono" data-role="city-select">
+            <select class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white outline-none font-mono" data-role="city-select">
                 <option value="Delhi">Delhi</option>
                 <option value="Mumbai">Mumbai</option>
             </select>
-            <div class="status-toggle flex items-center gap-2 cursor-pointer bg-gray-900 px-3 py-1.5 rounded-full border border-white/10" data-role="offline-toggle">
-                <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-                <span class="font-mono text-[11px] text-gray-300">Live Data (API)</span>
+            <div class="status-toggle flex items-center gap-2 cursor-pointer bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300" data-role="offline-toggle">
+                <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                <span>Live data sources</span>
             </div>
         </div>
     </nav>

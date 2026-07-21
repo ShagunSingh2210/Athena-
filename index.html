@@ -26,11 +26,30 @@
         <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
       </span>
     </a>
-    <nav class="main-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="map.html">Map &amp; Attribution</a>
-      <a href="advisory.html">Citizen Advisory</a>
-      <a href="leaderboard.html">Leaderboard</a>
+        <nav class="bg-[#111827] text-white flex justify-between items-center w-full px-6 py-3.5 h-16 shrink-0 z-50 shadow-md">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-sm font-mono">AQ</span>
+                <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-xs font-medium text-slate-300 items-center">
+                <a href="index.html" class="text-amber-400 font-bold border-b-2 border-amber-400 pb-1 hover:text-white transition-colors">Dashboard</a>
+                <a href="causal-loop.html" class="text-slate-300 hover:text-white transition-colors">Causal Loop</a>
+                <a href="map.html" class="text-slate-300 hover:text-white transition-colors">Map & Attribution</a>
+                <a href="advisory.html" class="text-slate-300 hover:text-white transition-colors">Citizen Advisory</a>
+                <a href="leaderboard.html" class="text-slate-300 hover:text-white transition-colors">Leaderboard</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <select class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white outline-none font-mono" data-role="city-select">
+                <option value="Delhi">Delhi</option>
+                <option value="Mumbai">Mumbai</option>
+            </select>
+            <div class="status-toggle flex items-center gap-2 cursor-pointer bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300" data-role="offline-toggle">
+                <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                <span>Live data sources</span>
+            </div>
+        </div>
     </nav>
     <div class="header-controls">
       <select class="select-control" data-role="city-select">
