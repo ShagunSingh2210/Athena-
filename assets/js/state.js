@@ -9,7 +9,7 @@ const AppState = (() => {
 
   const state = {
     city: params.get('city') || 'Delhi',
-    offline: params.get('offline') === '1', // default true (offline/mock mode)
+    offline: true, // default true (offline/mock mode)
   };
 
   function persist() {
