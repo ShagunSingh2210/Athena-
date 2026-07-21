@@ -4,49 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AirGuard - Causal Loop Detector</title>
+    <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ["Inter", "sans-serif"], mono: ["JetBrains Mono", "monospace"] } } } }
-    </script>
+    <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ["Inter", "sans-serif"], mono: ["JetBrains Mono", "monospace"] } } } }</script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- CRITICAL FIX: Chart.js library to render the graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    
     <style>body { font-family: "Inter", sans-serif; }</style>
 </head>
 <body class="flex flex-col h-screen bg-[#f4f6f9] text-slate-900">
-    <!-- Exact Dark Navy Navbar -->
+    <!-- Dark Navy Navbar -->
     <nav class="bg-[#0f172a] text-white flex justify-between items-center w-full px-6 py-0 h-16 shrink-0 z-50 shadow-md border-b border-white/5">
-    <div class="flex items-center gap-8 h-full">
-        <div class="flex items-center gap-3">
-            <span class="bg-[#f59e0b] text-[#0f172a] font-black px-2 py-1 rounded-md text-sm font-mono leading-none tracking-tight">AQ</span>
-            <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
-        </div>
-        <div class="hidden md:flex gap-6 text-[13px] font-medium text-slate-300 items-center h-full pt-1">
-            <a href="index.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Dashboard</a>
-            <a href="causal-loop.html" class="text-[#fbbF24] font-bold border-b-2 border-[#fbbF24] hover:text-white transition-colors h-full flex items-center">Causal Loop</a>
-            <a href="map.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Map & Attribution</a>
-            <a href="advisory.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Citizen Advisory</a>
-            <a href="leaderboard.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Leaderboard</a>
-        </div>
-    </div>
-    <div class="flex items-center gap-4">
-        <div class="relative">
-            <select class="appearance-none bg-[#1e293b] border border-slate-700 rounded-md px-3 py-1.5 pr-8 text-xs text-white outline-none font-mono focus:border-amber-500 cursor-pointer" data-role="city-select">
-                <option value="Delhi">Delhi</option>
-                <option value="Mumbai">Mumbai</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        <div class="flex items-center gap-8 h-full">
+            <div class="flex items-center gap-3">
+                <span class="bg-[#f59e0b] text-[#0f172a] font-black px-2 py-1 rounded-md text-sm font-mono leading-none tracking-tight">AQ</span>
+                <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-[13px] font-medium text-slate-300 items-center h-full pt-1">
+                <a href="index.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Dashboard</a>
+                <a href="causal-loop.html" class="text-[#fbbF24] font-bold border-b-2 border-[#fbbF24] hover:text-white transition-colors h-full flex items-center">Causal Loop</a>
+                <a href="map.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Map & Attribution</a>
+                <a href="advisory.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Citizen Advisory</a>
+                <a href="leaderboard.html" class="text-slate-300 border-b-2 border-transparent hover:text-white transition-colors h-full flex items-center">Leaderboard</a>
             </div>
         </div>
-        <div class="flex items-center gap-2 cursor-pointer bg-[#1e293b] px-3 py-1.5 rounded-md border border-slate-700 text-xs text-slate-300 transition-colors hover:bg-slate-700" data-role="offline-toggle">
-            <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]"></div>
-            <span class="font-mono">Live data sources</span>
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <select class="appearance-none bg-[#1e293b] border border-slate-700 rounded-md px-3 py-1.5 pr-8 text-xs text-white outline-none font-mono focus:border-amber-500 cursor-pointer" data-role="city-select">
+                    <option value="Delhi">Delhi</option>
+                    <option value="Mumbai">Mumbai</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 cursor-pointer bg-[#1e293b] px-3 py-1.5 rounded-md border border-slate-700 text-xs text-slate-300 transition-colors hover:bg-slate-700" data-role="offline-toggle">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]"></div>
+                <span class="font-mono">Live data sources</span>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-    <!-- Header info banner -->
+    <!-- Header Section -->
     <header class="px-8 py-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white shadow-sm shrink-0">
         <div>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Causal loop detector</h1>
@@ -62,16 +64,16 @@
         </div>
     </header>
 
-    <!-- Main Content Grid -->
+    <!-- Main Dashboard Grid -->
     <main class="flex-1 flex flex-col gap-5 p-6 overflow-y-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
                 <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-2 font-bold">Response Lag</span>
-                <span class="text-3xl font-bold font-mono text-slate-900" id="lagVal">2 days</span>
+                <span class="text-3xl font-bold font-mono text-slate-900" id="lagVal">--</span>
             </div>
             <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
                 <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-2 font-bold">Correlation Strength</span>
-                <span class="text-3xl font-bold font-mono text-slate-900" id="corrVal">0.85</span>
+                <span class="text-3xl font-bold font-mono text-slate-900" id="corrVal">--</span>
             </div>
             <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
                 <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-2 font-bold">WHO Safe AQI Limit</span>
@@ -81,6 +83,7 @@
 
         <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm flex-1 flex flex-col min-h-[400px]">
             <h3 class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-6 font-bold">AQI vs. Human Cost Index — 7 Day Trend</h3>
+            <!-- Container for the Canvas -->
             <div class="relative flex-1 w-full min-h-[300px]">
                 <canvas id="causalChart"></canvas>
             </div>
@@ -93,7 +96,6 @@
     <script src="assets/js/grid.js"></script>
     <script src="assets/js/mock-data.js"></script>
     <script src="assets/js/api.js"></script>
-    <script src="assets/js/nav.js"></script>
     <script src="assets/js/causal-loop-page.js"></script>
 </body>
 </html>
