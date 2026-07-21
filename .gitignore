@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+venv/
+.pytest_cache/
+.claude/
+
+# cache/*.csv is deliberately NOT ignored — SETUP.md has the team commit a
+# successful live pull's cache as the offline demo-day fallback. Don't
+# blanket-ignore this directory.
