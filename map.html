@@ -1,95 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Map & Attribution — Air Quality Platform</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirGuard - Geospatial Source Attribution</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; color: #1e293b; overflow-x: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        #map { width: 100%; height: 100%; min-height: 520px; border-radius: 0.5rem; z-index: 1; }
+        .aqi-bubble { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
+        .aqi-bubble:hover { transform: scale(1.2); z-index: 1000; }
+        .pulse { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-ring { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
 </head>
-<body>
-
-<div class="gov-strip">
-  <div class="wrap">
-    <span>ET HACKATHON PROTOTYPE — BUILT FOR POTENTIAL ADOPTION BY STATE POLLUTION CONTROL BOARDS</span>
-    <span>NOT AN OFFICIAL GOVERNMENT SERVICE</span>
-  </div>
-</div>
-
-<header class="site-header">
-  <div class="header-wrap">
-    <a href="index.html" class="brand">
-      <span class="brand-mark">AQ</span>
-      <span class="brand-text">
-        <span class="brand-title">Air Quality Attribution &amp; Advisory Platform</span>
-        <span class="brand-sub">Environmental Monitoring · Health Advisory · Pollution Debt</span>
-      </span>
-    </a>
-    <nav class="main-nav">
-      <a href="index.html">Dashboard</a>
-      <a href="map.html">Map &amp; Attribution</a>
-      <a href="advisory.html">Citizen Advisory</a>
-      <a href="leaderboard.html">Leaderboard</a>
+<body class="flex flex-col h-screen bg-[#f4f6f9]">
+    <!-- Top Nav Bar matching the rest of the application -->
+    <nav class="bg-[#111827] text-white flex justify-between items-center w-full px-6 py-3.5 h-16 shrink-0 z-50 shadow-md">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded text-sm font-mono">AQ</span>
+                <span class="text-base font-bold tracking-tight text-white">Air Quality Attribution & Advisory Platform</span>
+            </div>
+            <div class="hidden md:flex gap-6 text-xs font-medium text-slate-300">
+                <a href="index.html" class="hover:text-white transition-colors">Dashboard</a>
+                <a href="causal-loop.html" class="hover:text-white transition-colors">Causal Loop</a>
+                <a href="map.html" class="text-amber-400 font-bold border-b-2 border-amber-400 pb-1">Map & Attribution</a>
+                <a href="advisory.html" class="hover:text-white transition-colors">Citizen Advisory</a>
+                <a href="leaderboard.html" class="hover:text-white transition-colors">Leaderboard</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <select class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-xs text-white outline-none font-mono" data-role="city-select">
+                <option value="Delhi">Delhi</option>
+                <option value="Mumbai">Mumbai</option>
+            </select>
+            <div class="status-toggle flex items-center gap-2 cursor-pointer bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300" data-role="offline-toggle">
+                <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                <span>Live data sources</span>
+            </div>
+        </div>
     </nav>
-    <div class="header-controls">
-      <select class="select-control" data-role="city-select">
-        <option value="Delhi">Delhi</option>
-        <option value="Mumbai">Mumbai</option>
-      </select>
-      <div class="status-toggle" data-role="offline-toggle">
-        <span class="status-dot"></span>
-        <span class="status-label">Offline / fallback data</span>
-      </div>
+
+    <!-- Header info banner -->
+    <header class="px-8 py-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white shadow-xs">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Geospatial source attribution</h1>
+            <p class="text-xs text-slate-500 mt-1">Each marker is a 2km × 2km grid cell colored by current AQI. Click a marker — or pick a zone below — for its cause breakdown, trend, and road-density reading.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 text-xs font-mono">
+                <span class="text-slate-500 uppercase tracking-wider text-[10px]">Jump to zone</span>
+                <select id="zoneJumpSelect" class="bg-slate-50 border border-slate-300 rounded px-3 py-1.5 text-slate-800 text-xs outline-none focus:border-amber-500">
+                    <option value="">Select a zone...</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- Legend -->
+    <div class="px-8 py-2.5 bg-slate-100/80 flex flex-wrap gap-5 text-xs font-mono text-slate-600 border-b border-slate-200">
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Good</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-lime-500"></span> Satisfactory</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Moderate</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Poor</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Very Poor</span>
+        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-900"></span> Severe</span>
     </div>
-  </div>
-</header>
 
-<main class="page">
-  <div class="page-head">
-    <div>
-      <h1>Geospatial source attribution</h1>
-      <p class="desc">Each marker is a 2km × 2km grid cell colored by current AQI. Click a marker — or pick a zone below — for its cause breakdown, trend, and road-density reading.</p>
-    </div>
-    <div class="field" style="min-width:220px;">
-      <label for="zoneSelect">Jump to zone</label>
-      <select id="zoneSelect"><option value="">Select a zone…</option></select>
-    </div>
-  </div>
+    <!-- Main Content Grid -->
+    <main class="flex-1 flex flex-col md:flex-row gap-5 p-6 h-[calc(100vh-210px)] overflow-hidden">
+        <!-- Map Viewport -->
+        <div class="flex-1 flex flex-col h-full rounded-xl panel relative p-3">
+            <div id="map" class="w-full flex-1"></div>
+        </div>
 
-  <div class="legend-strip">
-    <span><span class="dot" style="background:var(--aqi-good);"></span>Good</span>
-    <span><span class="dot" style="background:var(--aqi-satisfactory);"></span>Satisfactory</span>
-    <span><span class="dot" style="background:var(--aqi-moderate);"></span>Moderate</span>
-    <span><span class="dot" style="background:var(--aqi-poor);"></span>Poor</span>
-    <span><span class="dot" style="background:var(--aqi-very-poor);"></span>Very Poor</span>
-    <span><span class="dot" style="background:var(--aqi-severe);"></span>Severe</span>
-    <span id="densityStatus" style="margin-left:auto;"></span>
-  </div>
+        <!-- Attribution Detail Sidebar -->
+        <div class="w-full md:w-[420px] flex flex-col gap-4 shrink-0 overflow-y-auto">
+            <div class="panel rounded-xl p-6 flex flex-col gap-4" id="attributionCard">
+                <div class="border-b border-slate-100 pb-3 flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] font-mono text-amber-600 uppercase tracking-widest block mb-1 font-semibold">Selected Sector Analysis</span>
+                        <h3 class="text-lg font-bold text-slate-900" id="panelZoneTitle">Select a Zone</h3>
+                    </div>
+                    <span class="px-2.5 py-1 rounded text-xs font-mono font-bold bg-slate-100 text-slate-700" id="panelAqiBadge">AQI --</span>
+                </div>
 
-  <div class="map-layout">
-    <div id="map"></div>
-    <div class="card card-pad drilldown-panel">
-      <div id="drilldownContent">
-        <div class="drilldown-empty">Click a zone marker on the map, or use the dropdown above, to see its attribution detail here.</div>
-      </div>
-    </div>
-  </div>
+                <div id="panelContent" class="space-y-4">
+                    <p class="text-xs text-slate-500 py-10 text-center">Click a zone marker on the map, or use the dropdown above, to see its attribution detail here.</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
-  <div class="card card-pad" style="margin-top:20px;" id="modelReadout"></div>
-</main>
-
-<footer class="site-footer">GRID: 2KM × 2KM CELLS · ATTRIBUTION MODEL: AQI ~ TRAFFIC + INDUSTRY + FIRES</footer>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="assets/js/state.js"></script>
-<script src="assets/js/grid.js"></script>
-<script src="assets/js/mock-data.js"></script>
-<script src="assets/js/osm-roads.js"></script>
-<script src="assets/js/attribution.js"></script>
-<script src="assets/js/nav.js"></script>
-<script src="assets/js/map-page.js"></script>
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/state.js"></script>
+    <script src="assets/js/grid.js"></script>
+    <script src="assets/js/mock-data.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/nav.js"></script>
+    <script src="assets/js/map-page.js"></script>
 </body>
 </html>

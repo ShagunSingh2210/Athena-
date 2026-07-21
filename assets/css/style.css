@@ -542,3 +542,12 @@ footer.site-footer {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .header-wrap { padding: 14px 16px; }
 }
+
+/* Custom pulse animation for severe AQI zones */
+.pulse { 
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; 
+}
+@keyframes pulse-ring { 
+    0%, 100% { opacity: 1; transform: scale(1); } 
+    50% { opacity: 0.85; transform: scale(1.1); box-shadow: 0 0 15px currentColor; } 
+}

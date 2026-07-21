@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirGuard - Causal Loop Detector</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0d1b2a; color: #e2e3df; overflow-x: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass-panel { background: rgba(26, 28, 26, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="flex flex-col h-screen bg-[#0d1b2a]">
+    <!-- Top Nav Bar -->
+    <nav class="bg-[#111412]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center w-full px-6 py-3 h-16 shrink-0 z-50">
+        <div class="flex items-center gap-6">
+            <span class="text-lg font-bold tracking-tight text-white">AirGuard</span>
+            <div class="hidden md:flex gap-6 text-xs font-mono">
+                <a href="index.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Dashboard</a>
+                <a href="causal-loop.html" class="text-cyan-400 font-bold border-b-2 border-cyan-400 pb-1">Causal Loop</a>
+                <a href="map.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Attribution Map</a>
+                <a href="advisory.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Health Advisory</a>
+                <a href="leaderboard.html" class="text-gray-400 hover:text-cyan-400 transition-colors">Leaderboard</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <select class="bg-gray-900 border border-white/10 rounded px-2 py-1 text-xs text-white outline-none font-mono" data-role="city-select">
+                <option value="Delhi">Delhi</option>
+                <option value="Mumbai">Mumbai</option>
+            </select>
+            <div class="status-toggle flex items-center gap-2 cursor-pointer bg-gray-900 px-3 py-1.5 rounded-full border border-white/10" data-role="offline-toggle">
+                <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+                <span class="font-mono text-[11px] text-gray-300">Live Data (API)</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header info banner -->
+    <header class="px-6 py-4 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#111412]/40">
+        <div>
+            <h1 class="text-xl font-bold text-white tracking-tight">Causal Loop Detector</h1>
+            <p class="text-xs text-gray-400 mt-0.5">How AQI moves public behaviour: a lagged cross-correlation between pollution spikes and searches/Reddit posts, distilled into a single Human Cost Index (HCI).</p>
+        </div>
+        <div class="flex items-center gap-3 font-mono text-xs">
+            <span class="text-gray-400">ZONE</span>
+            <select id="zoneSelect" class="bg-gray-900 border border-white/15 rounded px-3 py-1.5 text-white text-xs outline-none focus:border-cyan-400">
+                <option value="">Select zone...</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 flex flex-col gap-4 p-6 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-panel rounded-lg p-5 border border-white/10 shadow-xl">
+                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-wider block mb-1">Response Lag</span>
+                <span class="text-3xl font-bold font-mono text-white" id="lagVal">2 days</span>
+            </div>
+            <div class="glass-panel rounded-lg p-5 border border-white/10 shadow-xl">
+                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-wider block mb-1">Correlation Strength</span>
+                <span class="text-3xl font-bold font-mono text-cyan-400" id="corrVal">0.85</span>
+            </div>
+            <div class="glass-panel rounded-lg p-5 border border-white/10 shadow-xl">
+                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-wider block mb-1">WHO Safe AQI Limit</span>
+                <span class="text-3xl font-bold font-mono text-emerald-400">60</span>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-lg p-6 border border-white/10 shadow-xl flex-1 flex flex-col">
+            <h3 class="text-sm font-mono text-gray-300 uppercase tracking-wider mb-4">AQI vs. Human Cost Index — 7 Day Trend</h3>
+            <div class="relative flex-1 min-h-[300px]">
+                <canvas id="causalChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="assets/js/state.js"></script>
+    <script src="assets/js/grid.js"></script>
+    <script src="assets/js/mock-data.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/nav.js"></script>
+    <script src="assets/js/causal-loop-page.js"></script>
+</body>
+</html>
