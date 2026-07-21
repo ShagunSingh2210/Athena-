@@ -7,6 +7,8 @@ See "Repo layout" just below for how the backend and frontend halves fit
 together, then jump to "For Person B" for the fastest way to start
 integrating.
 
+Built with Python, the Gemini API, and Claude Code for development assistance.
+
 ## Backend detail (Person A — Data & Backend Track, v4: + HTTP API)
 
 5 modules, keyless-real-data-first, Delhi + Jaipur as the default demo/comparison
