@@ -112,3 +112,6 @@ Notes:
   for branding purposes, since it needs to stay legible/official.
 - State lives in the URL, not localStorage/sessionStorage, so every page
   stays a plain link you can share or bookmark mid-demo.
+
+## Contributors
+* **Nitya** - Lead Developer & Architect
