@@ -1,117 +1,152 @@
-# Athena — Air Quality Attribution & Advisory Platform
+# Athena — Air Quality Attribution, Health Advisory & Pollution Debt Platform
 
-A static, dependency-light frontend (plain HTML/CSS/JS + Chart.js + Leaflet)
-covering all four modules from the project plan. No build step — open
-`index.html` in a browser, or serve the folder with any static file server.
+ET Hackathon build. Athena turns raw air-quality signals into four things a
+city actually needs: **why** a zone is polluted (traffic vs. industry vs.
+stubble-burning), **who's affected and how badly** (a composite Human Cost
+Index correlating AQI with public search/sentiment behavior), **what to tell
+citizens** (LLM-drafted, officer-approved, multilingual health advisories),
+and **what it's costing** (a per-zone pollution-debt leaderboard). It ships
+as a working, tested backend plus a full multi-page dashboard UI — for
+Delhi and Jaipur out of the box, and for any city by name via live geocoding.
 
-```
-python3 -m http.server 8080   # then visit http://localhost:8080
-```
+Built with Python, FastAPI, the Gemini API, HTML/CSS/JS.
 
-(Opening `index.html` directly via `file://` mostly works too, except the
-live OSM road-density pull on the Map page needs `http(s)://`, since some
-browsers block `fetch()` from `file://` origins.)
+> **Integration status (verified 2026-07-22, re-checked live — not assumed):**
+> the frontend and backend do not yet share a matching contract. Every path
+> `assets/js/api.js` currently calls (`/api/grid`, `/api/zones`,
+> `/api/causal-loop/:cellId`, `/api/compare`, `/api/advisory`, ...) returns
+> **404** against the real, running backend — confirmed by starting both
+> and hitting each path directly, not inferred from reading the code. The
+> UI's offline/mock-data toggle also defaults to **on**
+> (`assets/js/state.js`), so it demos cleanly on mock data regardless. The
+> backend itself is fully working and tested in isolation — `/docs` and
+> `pytest tests/` both pass — the two sides just aren't wired to each other
+> yet. That's the team's active next step, not a finished claim.
 
-## Pages / modules
+## Repo layout: two halves of one system
 
-| Page                | Module                                                              |
-|---------------------|----------------------------------------------------------------------|
-| `index.html`        | Dashboard — situation report, AQI gauge, 7-day trend, module links   |
-| `causal-loop.html`  | **Module 1** — Causal Loop Detector (AQI vs. search/sentiment, HCI)  |
-| `map.html`          | **Module 2** — Geospatial Source Attribution (grid, choropleth, drill-down) |
-| `advisory.html`     | **Module 3** — Citizen Health Risk Advisory (chat, officer sign-off, alerts) |
-| `leaderboard.html`  | **Module 4** — Pollution Debt Leaderboard + two-city comparison      |
+- **Backend (Python)** — `api.py`, `run_demo.py`, `config.py`,
+  `data_pipelines/`, `modules/`, `utils/`, `tests/`. Run via
+  `uvicorn api:app` (see "Run the backend" below).
+- **Frontend (static HTML/CSS/JS)** — `index.html`, `map.html`,
+  `causal-loop.html`, `advisory.html`, `leaderboard.html`, `assets/css/`,
+  `assets/js/`. No build step — serve with any static file server (see
+  "Run the frontend" below).
 
-City switch (Delhi/Mumbai) and the offline/live toggle live in the shared
-header (`nav.js`) and persist across pages via URL query params — no
-localStorage, so every page stays a plain shareable link
-(`map.html?city=Delhi&offline=1`).
+The two halves meet at one file on each side: the frontend's
+**`assets/js/api.js`** is the integration boundary — every page calls
+`Api.getX()` functions that attempt a real HTTP call first and fall back to
+deterministic mock data (`mock-data.js`, `grid.js`, `attribution.js`) on any
+failure, so the UI is demoable offline even mid-integration. On the backend
+side, **`api.py`** is the HTTP layer over every module below, with
+interactive docs auto-generated at `/docs`.
 
-## File map
+## What's inside — backend modules
 
-```
-index.html, causal-loop.html, map.html, advisory.html, leaderboard.html
-assets/css/style.css        — one shared design system for all pages
-assets/js/
-  state.js                  — shared city/offline state via URL params
-  grid.js                   — 2km×2km city grid definition (JS port of Person A's Day-1 grid math)
-  mock-data.js               — deterministic seeded mock data, shaped exactly like the real API responses
-  api.js                     — ★ INTEGRATION BOUNDARY — see below
-  osm-roads.js               — live Overpass API road-density pull (falls back to mock)
-  attribution.js             — OLS regression fallback for source attribution (Person A supersedes via api.js)
-  nav.js                     — shared header behaviour (city select, offline toggle, active link)
-  home.js, map-page.js, advisory-page.js, leaderboard-page.js, causal-loop-page.js
-                              — one script per page, each calling only Api.* for data
-```
-
-## Where Person A's code plugs in
-
-Everything funnels through **`assets/js/api.js`**. No other file needs to
-change. Every `Api.getX()` function tries a real HTTP call first and falls
-back to the matching `mock*()` function (in `mock-data.js`, `grid.js`,
-`attribution.js`, `osm-roads.js`) on any failure — network error, timeout,
-bad status, bad JSON. That's what makes the "Day 7: pre-cache all live
-calls as an offline fallback" requirement automatic: nothing can hard-fail
-on demo day even if wifi or an API key misbehaves. The "Offline / fallback
-data" toggle in the header forces the fallback path on purpose, so you can
-demo it live.
-
-**To plug in:**
-1. Stand up a backend (Flask/FastAPI both work) that returns JSON matching
-   the shapes below. Each shape is exactly what the matching `mock*()`
-   function already returns — read `mock-data.js` / `attribution.js` /
-   `osm-roads.js` as your spec if a table row is ever ambiguous.
-2. Enable CORS for whatever origin serves this static site
-   (`flask-cors` + `CORS(app)` is the one-liner for a hackathon).
-3. Open `assets/js/api.js` and set `API_BASE` to your server URL.
-4. Toggle "Offline / fallback data" to "Live" in the header (or add
-   `?offline=0` to the URL). Every page picks up live data immediately.
-
-| Frontend call | Suggested endpoint | Returns |
+| # | Module | What it does |
 |---|---|---|
-| `getCityGrid(city)` | `GET /api/grid?city=Delhi` | `[{cellId,row,col,latMin,latMax,lonMin,lonMax,centroid:[lat,lon]}]` |
-| `getCityZones(cellIds)` | `POST /api/zones {cellIds}` | `[{cellId,currentAqi,hci,dominantCause,causeBreakdown,trend7day,googleTrend7day,measuresTaken}]` |
-| `getCausalLoop(cellId)` | `GET /api/causal-loop/:cellId` | `{cellId,aqiSeries,hciSeries,whoSafeLimit,lagDays,correlationStrength}` |
-| `getRedditSentiment(cellId)` | `GET /api/sentiment/:cellId` | `{cellId,label,changePct,keywords:[...]}` |
-| `getGoogleTrends(cellId)` | `GET /api/trends/:cellId` | `[{term,changePct}]` |
-| `getIndustrialProximity(cellIds)` | `POST /api/industry {cellIds}` | `{[cellId]: 0..1}` |
-| `getFireCounts(cellIds)` | `POST /api/fires {cellIds}` | `{[cellId]: int}` |
-| `getRoadDensity(cells)` | `POST /api/road-density {cells}` | `{[cellId]: {rawScore,normalized,class}}` |
-| `getAttributionModel(t,i,f,aqi)` | `POST /api/attribution-model {traffic,industry,fires,aqi}` | `{method,coefficients,intercept,r2}` |
-| `getLeaderboard(cellIds, topN)` | `POST /api/leaderboard {cellIds,topN}` | `[{cellId,population,daysAboveThreshold,estimatedCostInr,avgAqiThisWeek}]` |
-| `getCityComparison(cityA, cityB)` | `GET /api/compare?a=Delhi&b=Mumbai` | `{cityA:{name,factors,avgAqi}, cityB:{...}}` |
-| `getWeather(city)` | `GET /api/weather?city=Delhi` | `{temp,wind,humidity}` |
-| `getOfficerQueue()` | `GET /api/officer-queue` | `[{id,zone,profile,draftMessage,status}]` |
-| `getAdvisory(zone,profile,lang)` | `POST /api/advisory {zone,profile,language}` | `{text}` — **the real Claude API call lives on your server, not the browser** |
-| `approveAdvisory(id)` | `POST /api/officer-queue/:id/approve` | `{id,status}` |
-| `rejectAdvisory(id)` | `POST /api/officer-queue/:id/reject` | `{id,status}` |
+| 1 | **Causal Loop Detector** | Correlates AQI against Google Trends search interest and Reddit sentiment with a lagged-correlation scan, producing a composite **Human Cost Index** and detecting how many days behavior trails an AQI spike. |
+| 2 | **Geospatial Source Attribution** | Grids a city into 2km×2km cells and fits an OLS regression (traffic density, industrial area, fire/stubble-burning count, wind as a dispersion control) to attribute each cell's pollution to a dominant source, with R² and per-source percentages reported as confidence. |
+| 3 | **Citizen Health Risk Advisory** | Classifies risk against official CPCB PM2.5 breakpoints, drafts a personalized multilingual advisory via the Gemini API, and enforces an officer-approval workflow (draft → pending review → approved/rejected → sent) before anything reaches a citizen. |
+| 4 | **Pollution Debt Leaderboard** | Combines population, days above the WHO PM2.5 safe threshold, and a per-capita cost estimate into a ranked "who's paying the most" leaderboard, plus a 2-city diff-factor comparison. |
+| 5 | **AQI Forecast** | T+1/T+2 AQI forecast via a persistence-plus-weather delta regression, chosen over ARIMA/LSTM specifically because a live-gathered week of data can't support a heavier model without overfitting. |
+| — | **City Search** | Resolves any free-text city name to a working grid/config via Open-Meteo geocoding — not limited to the two cities registered by default. |
 
-Notes:
-- **`getAdvisory` should be server-side**, both because that's where the
-  Claude API key lives, and because the officer sign-off gate (draft →
-  approve → send) needs to be enforced server-side too — a citizen should
-  never be able to receive a message that skipped review just because the
-  browser called the wrong function.
-- `getRoadDensity` already has its own real, working live path — it hits
-  the public Overpass API directly from the browser (see `osm-roads.js`)
-  and only needs `api.js` if you'd rather proxy/cache Overpass on your own
-  server instead.
-- `attribution.js`'s `fitAttributionModel()` is a working OLS regression
-  (solved via the normal equation) already wired as the fallback — if your
-  Python model is more sophisticated, point `/api/attribution-model` at it
-  and this becomes dead code you can leave in place or delete.
-- You don't have to implement every endpoint before demo day. Any endpoint
-  you haven't built yet just falls back to mock data silently — ship
-  incrementally.
+Every pipeline is **keyless-real-data-first**: OpenAQ, AQICN, Open-Meteo,
+OSM Overpass, NASA FIRMS, and WorldPop all work with no signup, with paid/
+higher-frequency sources wired in as optional upgrades and a `cache/`-backed
+fallback chain so a flaky connection degrades gracefully instead of crashing
+mid-demo.
 
-## Design notes
+## Backend API
 
-- AQI severity colors (`--aqi-good` … `--aqi-severe`) follow the standard
-  CPCB National AQI breakpoints and are kept separate from the brand
-  palette (`--atmosphere`, `--marigold`) — don't restyle the severity scale
-  for branding purposes, since it needs to stay legible/official.
-- State lives in the URL, not localStorage/sessionStorage, so every page
-  stays a plain link you can share or bookmark mid-demo.
+Full interactive reference lives at **`/docs`** once the server is running
+(auto-generated from the real route definitions, so it can't drift out of
+sync) — treat it as the source of truth over any table here.
 
-## Contributors
-* **Nitya** - Lead Developer & Architect
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/dashboard` | Primary-city dashboard: HCI series + lag, attribution, forecast, top-5 leaderboard. |
+| GET | `/comparison/{city_key}` | Primary city vs. `city_key` diff-factor comparison (on-demand, e.g. a "Compare" button). |
+| GET | `/zones/{city_key}/{cell_id}` | Zone drill-down for a map click: cause %, trend, measures. |
+| GET | `/leaderboard/{city_key}` | Full pollution-debt leaderboard for one city. |
+| POST | `/advisories/{city_key}/{cell_id}` | Draft a personalized health advisory. Returns a `request_id`. |
+| POST | `/advisories/{request_id}/review` | Officer approve/reject a pending advisory. |
+| GET | `/cities/search?query=...` | Free-text city search — ranked candidates, not a single guess. |
+
+## Run the backend
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env        # fill in GEMINI_API_KEY at minimum
+uvicorn api:app --reload    # http://127.0.0.1:8000/docs
+pytest tests/                # 51/51 passing, fully offline/synthetic
+```
+
+`python run_demo.py` also runs the same 5-module pipeline standalone as a
+batch script (console output only, no server) if that's all you need.
+
+## Run the frontend
+
+```bash
+python3 -m http.server 8080   # from the repo root, then open http://localhost:8080
+```
+
+No build step, no npm install. Opening `index.html` directly via `file://`
+mostly works too, except the live OSM road-density pull needs `http(s)://`
+(some browsers block `fetch()` from `file://` origins).
+
+| Page | Covers |
+|---|---|
+| `index.html` | Dashboard — situation report, AQI gauge, 7-day trend |
+| `causal-loop.html` | Module 1 — Causal Loop Detector (AQI vs. search/sentiment, HCI) |
+| `map.html` | Module 2 — Geospatial Source Attribution (grid, choropleth, drill-down) |
+| `advisory.html` | Module 3 — Citizen Health Risk Advisory (chat, officer sign-off, alerts) |
+| `leaderboard.html` | Module 4 — Pollution Debt Leaderboard + two-city comparison |
+
+Stack: vanilla HTML/CSS/JS (no framework, no build step), **Leaflet** for
+the map, **Chart.js** for charts, Google Fonts (Newsreader/Inter/IBM Plex
+Mono) for an "environmental monitoring instrument" visual style — AQI
+severity colors follow the standard CPCB category scale, kept deliberately
+separate from the brand palette since that scale is a fixed reference
+standard, not a design choice. City selection and the offline/live toggle
+live in the URL query string (`?city=Delhi&offline=1`), not
+localStorage, so every page stays a plain, shareable, bookmarkable link.
+
+## Formulas
+
+(Written as plain-text code spans rather than `$...$` LaTeX — verified
+against GitHub's actual rendered view that the LaTeX delimiters were
+displaying as raw literal backslashes/underscores instead of typeset math;
+this notation renders correctly everywhere instead.)
+
+**Human Cost Index** (Module 1): `HCI_t = 0.5 * AQI_norm_t + 0.25 * sentiment_norm_t + 0.25 * search_norm_t`
+
+**Attribution** (Module 2): `AQI_i = b0 + b1*traffic_i + b2*industry_i + b3*fire_i + b4*wind_i + error_i` — wind is fit as a dispersion control, excluded from the attribution-% calc, since it modifies how pollution spreads rather than emitting any itself.
+
+**Pollution debt** (Module 4): `Cost_z = P_z * D_z * C_pc`, shipped with an explicit methodology disclaimer on `C_pc` (a demo-grade per-capita estimate, not a peer-reviewed figure).
+
+**AQI forecast** (Module 5): `delta_AQI_(t+1) = a + b1*wind_forecast + b2*humidity_forecast`, rolled forward cumulatively from the last known reading.
+
+## Engineering decisions worth knowing about
+
+- **Wind as a control, not a source** — prevents the attribution model from confusing "still air" with "a strong local emitter."
+- **Persistence-plus-weather over ARIMA/LSTM** for the forecast — matched to the data volume a live, week-long build can actually gather without overfitting.
+- **Fetch-with-fallback everywhere** (`utils/caching.py`) — one decorator, reused by every pipeline, so a rate-limited or offline source degrades to its last successful cache instead of crashing the demo.
+- **City search returns ranked candidates, never a single guess** — same-name cities across states/countries are genuinely ambiguous, so the caller picks.
+- **Officer-approval as a real state machine** (`module3_health_advisory.py`) — a drafted advisory can't reach SENT without passing through PENDING_REVIEW → APPROVED first, and an already-decided advisory can't be silently re-decided.
+- **Zone-drilldown and dashboard payloads as single function calls** — the frontend never has to join Module 1/2/4/5 output itself; one call returns the whole payload.
+
+## Testing
+
+`pytest tests/` — 51/51 passing, entirely offline against synthetic
+fixtures (no live network calls in any test): grid/bounding-box math, the
+HCI and lag-correlation formulas, the attribution regression, the officer-
+approval state machine, city-search geocoding logic, and every `api.py`
+endpoint's happy path plus its 400/404/502 error paths.
+
+## Known limitations / next steps
+
+- WorldPop's population lookup and a couple of live sources can be slow/rate-limited depending on network conditions — the `cache/` fallback covers this, but a fresh live run should be smoke-tested once more before a real demo.
+- `GEMINI_API_KEY` is the one dependency with no keyless substitute — free tier, no card required, but real rate limits apply (see `.env.example`).
+- Google Trends search-interest scoping is currently **country-level (`geo="IN"`) for every city**, not state- or city-level, for Delhi and Jaipur alike — the per-city `trends_geo` field exists on `CityConfig` (state-level where confidently mappable, e.g. Rajasthan for Jaipur) but isn't wired into the live Trends query yet (see the known-limitation note in `data_pipelines/trends_ingestion.py`).
