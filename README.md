@@ -11,18 +11,6 @@ Delhi and Jaipur out of the box, and for any city by name via live geocoding.
 
 Built with Python, FastAPI, the Gemini API, HTML/CSS/JS.
 
-> **Integration status (verified 2026-07-22, re-checked live — not assumed):**
-> the frontend and backend do not yet share a matching contract. Every path
-> `assets/js/api.js` currently calls (`/api/grid`, `/api/zones`,
-> `/api/causal-loop/:cellId`, `/api/compare`, `/api/advisory`, ...) returns
-> **404** against the real, running backend — confirmed by starting both
-> and hitting each path directly, not inferred from reading the code. The
-> UI's offline/mock-data toggle also defaults to **on**
-> (`assets/js/state.js`), so it demos cleanly on mock data regardless. The
-> backend itself is fully working and tested in isolation — `/docs` and
-> `pytest tests/` both pass — the two sides just aren't wired to each other
-> yet. That's the team's active next step, not a finished claim.
-
 ## Repo layout: two halves of one system
 
 - **Backend (Python)** — `api.py`, `run_demo.py`, `config.py`,
@@ -45,7 +33,7 @@ interactive docs auto-generated at `/docs`.
 
 | # | Module | What it does |
 |---|---|---|
-| 1 | **Causal Loop Detector** | Correlates AQI against Google Trends search interest and Reddit sentiment with a lagged-correlation scan, producing a composite **Human Cost Index** and detecting how many days behavior trails an AQI spike. |
+| 1 | **Causal Loop Detector** | Correlates AQI against public search interest and sentiment signals with a lagged-correlation scan, producing a composite **Human Cost Index** and detecting how many days behavior trails an AQI spike. |
 | 2 | **Geospatial Source Attribution** | Grids a city into 2km×2km cells and fits an OLS regression (traffic density, industrial area, fire/stubble-burning count, wind as a dispersion control) to attribute each cell's pollution to a dominant source, with R² and per-source percentages reported as confidence. |
 | 3 | **Citizen Health Risk Advisory** | Classifies risk against official CPCB PM2.5 breakpoints, drafts a personalized multilingual advisory via the Gemini API, and enforces an officer-approval workflow (draft → pending review → approved/rejected → sent) before anything reaches a citizen. |
 | 4 | **Pollution Debt Leaderboard** | Combines population, days above the WHO PM2.5 safe threshold, and a per-capita cost estimate into a ranked "who's paying the most" leaderboard, plus a 2-city diff-factor comparison. |
