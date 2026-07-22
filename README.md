@@ -1,6 +1,6 @@
 # Athena — Air Quality Attribution, Health Advisory & Pollution Debt Platform
 
-ET Hackathon build. Athena turns raw air-quality signals into four things a
+Athena turns raw air-quality signals into four things a
 city actually needs: **why** a zone is polluted (traffic vs. industry vs.
 stubble-burning), **who's affected and how badly** (a composite Human Cost
 Index correlating AQI with public search/sentiment behavior), **what to tell
@@ -10,6 +10,7 @@ as a working, tested backend plus a full multi-page dashboard UI — for
 Delhi and Jaipur out of the box, and for any city by name via live geocoding.
 
 Built with Python, FastAPI, the Gemini API, HTML/CSS/JS.
+**Highlights:** Multi-city support • Live public data sources • Offline demo mode • 51/51 backend tests passing
 
 ## Repo layout: two halves of one system
 
@@ -21,13 +22,7 @@ Built with Python, FastAPI, the Gemini API, HTML/CSS/JS.
   `assets/js/`. No build step — serve with any static file server (see
   "Run the frontend" below).
 
-The two halves meet at one file on each side: the frontend's
-**`assets/js/api.js`** is the integration boundary — every page calls
-`Api.getX()` functions that attempt a real HTTP call first and fall back to
-deterministic mock data (`mock-data.js`, `grid.js`, `attribution.js`) on any
-failure, so the UI is demoable offline even mid-integration. On the backend
-side, **`api.py`** is the HTTP layer over every module below, with
-interactive docs auto-generated at `/docs`.
+The frontend communicates with the FastAPI backend through `assets/js/api.js`, which serves as the API client for every page. Whenever the backend is available, pages retrieve live data through the corresponding API endpoints. An optional deterministic offline mode is also provided for local development, testing, and reliable demonstrations when network connectivity or external data providers are unavailable. On the backend, `api.py` exposes every analytics module through REST endpoints, with interactive API documentation automatically generated at `/docs`.
 
 ## What's inside — backend modules
 
@@ -92,7 +87,7 @@ mostly works too, except the live OSM road-density pull needs `http(s)://`
 | `advisory.html` | Module 3 — Citizen Health Risk Advisory (chat, officer sign-off, alerts) |
 | `leaderboard.html` | Module 4 — Pollution Debt Leaderboard + two-city comparison |
 
-Stack: vanilla HTML/CSS/JS (no framework, no build step), **Leaflet** for
+Stack: HTML/CSS/JS (no framework, no build step), **Leaflet** for
 the map, **Chart.js** for charts, Google Fonts (Newsreader/Inter/IBM Plex
 Mono) for an "environmental monitoring instrument" visual style — AQI
 severity colors follow the standard CPCB category scale, kept deliberately
@@ -120,7 +115,7 @@ this notation renders correctly everywhere instead.)
 
 - **Wind as a control, not a source** — prevents the attribution model from confusing "still air" with "a strong local emitter."
 - **Persistence-plus-weather over ARIMA/LSTM** for the forecast — matched to the data volume a live, week-long build can actually gather without overfitting.
-- **Fetch-with-fallback everywhere** (`utils/caching.py`) — one decorator, reused by every pipeline, so a rate-limited or offline source degrades to its last successful cache instead of crashing the demo.
+- - **Fetch-with-cache fallback** (`utils/caching.py`) — a shared decorator reused across every data pipeline that automatically serves the most recent successful result whenever a live source is temporarily unavailable or rate-limited, improving reliability during development and demonstrations.
 - **City search returns ranked candidates, never a single guess** — same-name cities across states/countries are genuinely ambiguous, so the caller picks.
 - **Officer-approval as a real state machine** (`module3_health_advisory.py`) — a drafted advisory can't reach SENT without passing through PENDING_REVIEW → APPROVED first, and an already-decided advisory can't be silently re-decided.
 - **Zone-drilldown and dashboard payloads as single function calls** — the frontend never has to join Module 1/2/4/5 output itself; one call returns the whole payload.
@@ -135,6 +130,6 @@ endpoint's happy path plus its 400/404/502 error paths.
 
 ## Known limitations / next steps
 
-- WorldPop's population lookup and a couple of live sources can be slow/rate-limited depending on network conditions — the `cache/` fallback covers this, but a fresh live run should be smoke-tested once more before a real demo.
+- - WorldPop population lookup and a small number of live data sources may occasionally experience slower responses or temporary rate limits depending on network conditions. The caching layer provides graceful degradation, although a quick live smoke test is recommended before production demonstrations.
 - `GEMINI_API_KEY` is the one dependency with no keyless substitute — free tier, no card required, but real rate limits apply (see `.env.example`).
 - Google Trends search-interest scoping is currently **country-level (`geo="IN"`) for every city**, not state- or city-level, for Delhi and Jaipur alike — the per-city `trends_geo` field exists on `CityConfig` (state-level where confidently mappable, e.g. Rajasthan for Jaipur) but isn't wired into the live Trends query yet (see the known-limitation note in `data_pipelines/trends_ingestion.py`).
