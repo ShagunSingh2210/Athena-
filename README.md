@@ -115,7 +115,7 @@ this notation renders correctly everywhere instead.)
 
 - **Wind as a control, not a source** — prevents the attribution model from confusing "still air" with "a strong local emitter."
 - **Persistence-plus-weather over ARIMA/LSTM** for the forecast — matched to the data volume a live, week-long build can actually gather without overfitting.
-- - **Fetch-with-cache fallback** (`utils/caching.py`) — a shared decorator reused across every data pipeline that automatically serves the most recent successful result whenever a live source is temporarily unavailable or rate-limited, improving reliability during development and demonstrations.
+- **Fetch-with-cache fallback** (`utils/caching.py`) — a shared decorator reused across every data pipeline that automatically serves the most recent successful result whenever a live source is temporarily unavailable or rate-limited, improving reliability during development and demonstrations.
 - **City search returns ranked candidates, never a single guess** — same-name cities across states/countries are genuinely ambiguous, so the caller picks.
 - **Officer-approval as a real state machine** (`module3_health_advisory.py`) — a drafted advisory can't reach SENT without passing through PENDING_REVIEW → APPROVED first, and an already-decided advisory can't be silently re-decided.
 - **Zone-drilldown and dashboard payloads as single function calls** — the frontend never has to join Module 1/2/4/5 output itself; one call returns the whole payload.
@@ -130,6 +130,6 @@ endpoint's happy path plus its 400/404/502 error paths.
 
 ## Known limitations / next steps
 
-- - WorldPop population lookup and a small number of live data sources may occasionally experience slower responses or temporary rate limits depending on network conditions. The caching layer provides graceful degradation, although a quick live smoke test is recommended before production demonstrations.
+- WorldPop population lookup and a small number of live data sources may occasionally experience slower responses or temporary rate limits depending on network conditions. The caching layer provides graceful degradation, although a quick live smoke test is recommended before production demonstrations.
 - `GEMINI_API_KEY` is the one dependency with no keyless substitute — free tier, no card required, but real rate limits apply (see `.env.example`).
 - Google Trends search-interest scoping is currently **country-level (`geo="IN"`) for every city**, not state- or city-level, for Delhi and Jaipur alike — the per-city `trends_geo` field exists on `CityConfig` (state-level where confidently mappable, e.g. Rajasthan for Jaipur) but isn't wired into the live Trends query yet (see the known-limitation note in `data_pipelines/trends_ingestion.py`).
